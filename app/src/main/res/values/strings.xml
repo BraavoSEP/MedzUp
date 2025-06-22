@@ -1,25 +1,34 @@
 <resources>
     <string name="app_name">MedzUp</string>
     
-    <!-- Language Selection -->
-    <string name="language_selection_title">Choose Language</string>
-    <string name="language_selection_subtitle">Select your preferred language</string>
+    <!-- Language Selection - REMOVED -->
+    <!-- These strings are no longer needed but kept for reference if feature is re-added -->
+    <!--
+    <string name="language_selection_title">Bem-vindo!</string>
+    <string name="language_selection_subtitle">Por favor, selecione o seu idioma de preferência</string>
     <string name="language_portuguese">Português</string>
-    <string name="language_english">English</string>
-    <string name="language_continue">Continue</string>
+    <string name="language_english">Inglês</string>
+    <string name="language_continue">Continuar</string>
+    -->
+    
+    <!-- General Actions -->
+    <string name="action_save">Salvar</string>
+    <string name="action_back">Voltar</string>
+    <string name="action_close">Fechar</string>
+    <string name="menu">Menu</string>
     
     <!-- Navigation -->
-    <string name="nav_home">Home</string>
-    <string name="nav_add_medicine">Add Medicine</string>
-    <string name="nav_camera">Camera</string>
+    <string name="nav_home">Início</string>
+    <string name="nav_add_medicine">Adicionar Medicamento</string>
+    <string name="nav_camera">Câmera</string>
     
     <!-- Home Screen -->
-    <string name="home_title">My Medicines</string>
-    <string name="home_empty_state">No medicines added yet</string>
+    <string name="home_title">Meus Medicamentos</string>
+    <string name="home_empty_state">Nenhum medicamento adicionado ainda</string>
     <string name="home_add_first_medicine">Add your first medicine</string>
     
     <!-- Add Medicine Screen -->
-    <string name="add_medicine_title">Add Medicine</string>
+    <string name="add_medicine_title">Adicionar Medicamento</string>
     <string name="medicine_name">Medicine Name</string>
     <string name="medicine_name_hint">Enter medicine name</string>
     <string name="medicine_dosage">Dosage</string>
@@ -38,25 +47,84 @@
     <string name="medicine_delete">Delete</string>
     <string name="medicine_take_dose">Take Dose</string>
     <string name="medicine_skip_dose">Skip Dose</string>
+    <string name="mark_as_taken_button">Marcar como Tomado</string>
+    <string name="medicine_details_subtitle">Detalhes do Medicamento</string>
     
     <!-- Camera Screen -->
-    <string name="camera_title">Scan Medicine</string>
-    <string name="camera_permission_required">Camera permission is required</string>
-    <string name="camera_permission_grant">Grant Permission</string>
+    <string name="camera_title">Escanear Medicamento</string>
+    <string name="camera_scan_title">Escanear</string>
+    <string name="camera_permission_required">Permissão de câmera necessária</string>
+    <string name="camera_permission_denied">Permissão de câmera negada</string>
+    <string name="camera_permission_rationale">A câmera é necessária para escanear códigos de barras e textos</string>
+    <string name="camera_scanning_text">Escaneando...</string>
+    <string name="camera_scan_success">Escaneamento realizado com sucesso!</string>
+    <string name="camera_scan_error">Erro no escaneamento</string>
+    <string name="camera_retry_button">Tentar Novamente</string>
+    <string name="camera_back_button">Voltar</string>
+    <string name="camera_flash_on">Flash Ligado</string>
+    <string name="camera_flash_off">Flash Desligado</string>
+    <string name="camera_switch_camera">Trocar Câmera</string>
+    <string name="camera_capture_button">Capturar</string>
+    <string name="camera_processing">Processando...</string>
+    <string name="camera_processing_complete">Processamento concluído</string>
+    <string name="camera_processing_error">Erro no processamento</string>
+    <string name="camera_processing_cancelled">Processamento cancelado</string>
+    <string name="camera_permission_grant">Conceder Permissão</string>
     
     <!-- Common -->
-    <string name="cancel">Cancel</string>
-    <string name="confirm">Confirm</string>
-    <string name="delete">Delete</string>
-    <string name="edit">Edit</string>
-    <string name="save">Save</string>
-    <string name="loading">Loading...</string>
-    <string name="error_occurred">An error occurred</string>
-    <string name="success">Success</string>
+    <string name="cancel">Cancelar</string>
+    <string name="confirm">Confirmar</string>
+    <string name="delete">Excluir</string>
+    <string name="edit">Editar</string>
+    <string name="save">Salvar</string>
+    <string name="loading">Carregando...</string>
+    <string name="error_occurred">Ocorreu um erro</string>
+    <string name="success">Sucesso</string>
     
     <!-- Notifications -->
-    <string name="notification_title">Medicine Reminder</string>
-    <string name="notification_content">Time to take your medicine</string>
-    <string name="notification_channel_name">Medicine Reminders</string>
+    <string name="notification_title">Hora do seu medicamento!</string>
+    <string name="notification_text">É hora de tomar o seu %s.</string>
+    <string name="notification_channel_name">Lembretes de Medicamentos</string>
     <string name="notification_channel_description">Reminders for taking medicines</string>
+    
+    <!-- Home Screen -->
+    <string name="empty_state_message">Nenhum medicamento ainda!\nToque no botão \'+\' para adicionar o primeiro.</string>
+    <string name="dosage_label">Dosagem: %s</string>
+    <string name="stock_label">Estoque: %d</string>
+    <string name="schedule_label">A partir das %1$s, a cada %2$d horas</string>
+    <string name="reminders_at_label">Lembretes às: %s</string>
+    
+    <!-- Add/Edit Medicine Screen -->
+    <string name="medicine_name_label">Nome do Medicamento</string>
+    <string name="dosage_label_input">Dosagem (ex: 1 comprimido, 10 mg)</string>
+    <string name="stock_label_input">Estoque (unidades)</string>
+    <string name="start_time_label">Horário de início</string>
+    <string name="interval_hours_label">Intervalo entre doses (horas)</string>
+    <string name="treatment_duration_label">Duração do tratamento (dias)</string>
+    <string name="scan_barcode_button">Escanear Código de Barras</string>
+    <string name="scan_text_button">Escanear Texto da Embalagem</string>
+    <string name="medicine_saved_toast">Medicamento salvo!</string>
+    <string name="invalid_time_format_toast">Formato de hora inválido. Por favor, use HH:mm.</string>
+    <string name="fill_all_fields_toast">Por favor, preencha todos os campos.</string>
+    
+    <!-- Details Screen -->
+    <string name="details_title">Detalhes do Medicamento</string>
+    <string name="take_dose_button">Tomar Dose</string>
+    <string name="edit_button">Editar</string>
+    <string name="delete_button">Excluir</string>
+    <string name="delete_confirmation_title">Confirmar Exclusão</string>
+    <string name="delete_confirmation_message">Você tem certeza que deseja excluir este medicamento? Esta ação não pode ser desfeita.</string>
+    <string name="confirm_button">Confirmar</string>
+    <string name="cancel_button">Cancelar</string>
+    <string name="dose_taken_toast">Dose marcada como tomada!</string>
+
+    <!-- Patient Management -->
+    <string name="patients_title">Pacientes</string>
+    <string name="add_patient_title">Adicionar Novo Paciente</string>
+    <string name="add_patient_button">Adicionar Paciente</string>
+    <string name="patient_name_label">Nome do Paciente</string>
+    <string name="empty_patients_message">Nenhum paciente cadastrado.\nToque no botão \'+\' para adicionar o primeiro.</string>
+    <string name="add_button">Adicionar</string>
+    <string name="empty_medicines_message">Nenhum medicamento cadastrado para este paciente.\nToque no botão \'+\' para adicionar o primeiro.</string>
+    <string name="save_medicine_button">Salvar Medicamento</string>
 </resources> 

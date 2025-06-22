@@ -1,100 +1,165 @@
 package com.medzup.app.ui.screens.home
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import android.app.Activity
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.medzup.app.R
 import com.medzup.app.data.database.model.MedicineEntity
+import com.medzup.app.data.database.model.PatientEntity
 import com.medzup.app.ui.navigation.Screen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val medicines by viewModel.medicines.collectAsState()
+    val patients by viewModel.patients.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = stringResource(id = R.string.patients_title)) }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate(Screen.AddMedicine.route) },
-                containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.onTertiary
+                onClick = { showDialog = true },
             ) {
-                Icon(Icons.Filled.Add, contentDescription = "Add Medicine")
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = stringResource(id = R.string.add_patient_button)
+                )
             }
         }
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
-            if (medicines.isEmpty()) {
-                EmptyState()
+            if (patients.isEmpty()) {
+                EmptyState(message = stringResource(id = R.string.empty_patients_message))
             } else {
-                MedicineList(medicines = medicines, navController = navController)
+                PatientList(
+                    patients = patients,
+                    onPatientClick = { patient ->
+                        navController.navigate(Screen.PatientMedicineList.createRoute(patient.id))
+                    }
+                )
             }
         }
-    }
-}
 
-@Composable
-fun MedicineList(medicines: List<MedicineEntity>, navController: NavController) {
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(medicines) { medicine ->
-            MedicineCard(
-                medicine = medicine,
-                onClick = {
-                    navController.navigate(Screen.MedicineDetails.createRoute(medicine.id))
+        if (showDialog) {
+            AddPatientDialog(
+                onDismiss = { showDialog = false },
+                onConfirm = { name ->
+                    viewModel.addPatient(name)
+                    showDialog = false
                 }
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MedicineCard(medicine: MedicineEntity, onClick: () -> Unit) {
-    Card(
-        onClick = onClick,
-        modifier = Modifier.fillMaxSize(),
-        shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+fun PatientList(patients: List<PatientEntity>, onPatientClick: (PatientEntity) -> Unit) {
+    LazyColumn(
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = medicine.name, style = MaterialTheme.typography.titleLarge)
-            Text(text = "Dosage: ${medicine.dosage}", style = MaterialTheme.typography.bodyMedium)
-            Text(text = "Stock: ${medicine.stock}", style = MaterialTheme.typography.bodyMedium)
-            Text(text = "Reminders at: ${medicine.reminderTimes}", style = MaterialTheme.typography.bodyMedium)
+        items(patients) { patient ->
+            PatientCard(
+                patient = patient,
+                onClick = { onPatientClick(patient) }
+            )
         }
     }
 }
 
 @Composable
-fun EmptyState() {
+fun PatientCard(patient: PatientEntity, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = null,
+                modifier = Modifier.size(40.dp)
+            )
+            Text(text = patient.name, style = MaterialTheme.typography.titleLarge)
+        }
+    }
+}
+
+@Composable
+fun AddPatientDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
+    var name by remember { mutableStateOf("") }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(text = stringResource(id = R.string.add_patient_title), style = MaterialTheme.typography.titleLarge)
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text(stringResource(id = R.string.patient_name_label)) }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text(stringResource(id = R.string.cancel_button))
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = { onConfirm(name) }) {
+                        Text(stringResource(id = R.string.add_button))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun EmptyState(message: String) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "No medicines yet!\nTap the '+' button to add your first one.",
+            text = message,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(16.dp)

@@ -1,11 +1,14 @@
 package com.medzup.app.managers
 
 import android.content.Context
-import androidx.work.*
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.medzup.app.data.database.model.MedicineEntity
 import com.medzup.app.workers.ReminderWorker
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.util.*
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -17,48 +20,64 @@ class ReminderManager @Inject constructor(
     private val workManager = WorkManager.getInstance(context)
 
     fun scheduleReminders(medicine: MedicineEntity) {
-        // First, cancel any existing reminders for this medicine to avoid duplicates
         cancelReminders(medicine.id)
 
-        val reminderTimes = medicine.reminderTimes.split(",").map { it.trim() }
+        try {
+            val timeParts = medicine.startTime.split(":").map { it.toInt() }
+            if (timeParts.size != 2) return // Invalid time format
 
-        reminderTimes.forEachIndexed { index, time ->
-            val timeParts = time.split(":").map { it.toInt() }
-            val hour = timeParts[0]
-            val minute = timeParts[1]
+            val startHour = timeParts[0]
+            val startMinute = timeParts[1]
+            val interval = medicine.intervalHours
+            val duration = medicine.durationDays
 
             val now = Calendar.getInstance()
-            val nextReminder = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, hour)
-                set(Calendar.MINUTE, minute)
+            val treatmentEnd = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, duration) }
+
+            val currentReminderTime = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, startHour)
+                set(Calendar.MINUTE, startMinute)
                 set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
             }
 
-            // If the time has already passed for today, schedule it for tomorrow
-            if (nextReminder.before(now)) {
-                nextReminder.add(Calendar.DAY_OF_YEAR, 1)
+            // If the very first reminder time is in the past, move it to the next day
+            if (currentReminderTime.before(now)) {
+                currentReminderTime.add(Calendar.DAY_OF_YEAR, 1)
             }
 
-            val initialDelay = nextReminder.timeInMillis - now.timeInMillis
+            var reminderIndex = 0
+            while (currentReminderTime.before(treatmentEnd)) {
+                val delay = currentReminderTime.timeInMillis - now.timeInMillis
+                
+                // Only schedule if the reminder is in the future
+                if (delay > 0) {
+                    val data = workDataOf(
+                        ReminderWorker.KEY_MEDICINE_NAME to medicine.name,
+                        ReminderWorker.KEY_DOSAGE to medicine.dosage
+                    )
+                    
+                    val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .setInputData(data)
+                        .addTag("reminder_${medicine.id}")
+                        .build()
+                    
+                    workManager.enqueueUniqueWork(
+                        "reminder_${medicine.id}_${reminderIndex}",
+                        ExistingWorkPolicy.REPLACE,
+                        workRequest
+                    )
+                    reminderIndex++
+                }
+                
+                // Move to the next reminder time
+                currentReminderTime.add(Calendar.HOUR_OF_DAY, interval)
+            }
 
-            val data = workDataOf(
-                ReminderWorker.KEY_MEDICINE_NAME to medicine.name,
-                ReminderWorker.KEY_DOSAGE to medicine.dosage
-            )
-            
-            val uniqueWorkName = "reminder_${medicine.id}_$index"
-
-            val reminderRequest = PeriodicWorkRequestBuilder<ReminderWorker>(24, TimeUnit.HOURS)
-                .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
-                .setInputData(data)
-                .addTag("reminder_${medicine.id}")
-                .build()
-
-            workManager.enqueueUniquePeriodicWork(
-                uniqueWorkName,
-                ExistingPeriodicWorkPolicy.REPLACE,
-                reminderRequest
-            )
+        } catch (e: Exception) {
+            // Log error in a real app
+            e.printStackTrace()
         }
     }
 

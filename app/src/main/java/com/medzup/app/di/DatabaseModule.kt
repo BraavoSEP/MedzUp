@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.medzup.app.data.database.MedzUpDatabase
 import com.medzup.app.data.database.dao.DoseHistoryDao
 import com.medzup.app.data.database.dao.MedicineDao
+import com.medzup.app.data.database.dao.PatientDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +24,9 @@ object DatabaseModule {
             context,
             MedzUpDatabase::class.java,
             MedzUpDatabase.DATABASE_NAME
-        ).build()
+        )
+        .fallbackToDestructiveMigration()
+        .build()
     }
 
     @Provides
@@ -34,5 +37,10 @@ object DatabaseModule {
     @Provides
     fun provideDoseHistoryDao(database: MedzUpDatabase): DoseHistoryDao {
         return database.doseHistoryDao()
+    }
+
+    @Provides
+    fun providePatientDao(database: MedzUpDatabase): PatientDao {
+        return database.patientDao()
     }
 } 

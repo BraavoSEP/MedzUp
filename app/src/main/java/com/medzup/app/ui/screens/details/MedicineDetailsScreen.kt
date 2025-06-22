@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,9 +17,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.medzup.app.R
 import com.medzup.app.data.database.model.DoseHistoryEntity
 import com.medzup.app.data.database.model.MedicineEntity
 import com.medzup.app.ui.navigation.Screen
@@ -49,10 +53,18 @@ fun MedicineDetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(medicine?.name ?: "Details") },
+                title = { Text(text = stringResource(id = R.string.details_title)) },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.action_back)
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { /* TODO: Handle edit */ }) {
+                        // Placeholder for edit action
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -84,7 +96,7 @@ fun MedicineDetailsScreen(
                     BulaSection(
                         text = it,
                         simplifiedText = simplifiedBula,
-                        onSimplifyClick = { viewModel.simplifyBulaText(it) }
+                        onSimplifyClick = { viewModel.simplifyBulaText() }
                     )
                 }
             }

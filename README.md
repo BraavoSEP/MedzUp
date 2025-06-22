@@ -2,15 +2,15 @@
 
 ## 📱 Sobre o Projeto
 
-MedzUp é um aplicativo Android desenvolvido em Kotlin para ajudar usuários a gerenciar seus medicamentos de forma eficiente. O app oferece lembretes personalizados, histórico de dosagens e suporte a múltiplos idiomas.
+MedzUp é um aplicativo Android desenvolvido em Kotlin para ajudar usuários a gerenciar seus medicamentos de forma eficiente. O app oferece lembretes personalizados e histórico de dosagens para múltiplos pacientes.
 
 ## ✨ Funcionalidades
 
-- **Gerenciamento de Medicamentos**: Adicione, edite e remova medicamentos
-- **Lembretes Inteligentes**: Configure horários personalizados para cada medicamento
-- **Histórico de Dosagens**: Acompanhe quando tomou cada medicamento
-- **Suporte Multi-idioma**: Disponível em português e inglês
-- **Interface Moderna**: Design Material 3 com navegação intuitiva
+- **Gerenciamento de Pacientes**: Adicione e gerencie múltiplos pacientes.
+- **Gerenciamento de Medicamentos**: Adicione, edite e remova medicamentos para cada paciente.
+- **Lembretes Inteligentes**: Configure horários personalizados para cada medicamento.
+- **Histórico de Dosagens**: Acompanhe quando cada dose foi administrada.
+- **Interface Moderna**: Design Material 3 com navegação intuitiva.
 - **Câmera Integrada**: Escaneie medicamentos (funcionalidade futura)
 
 ## 🛠️ Tecnologias Utilizadas
@@ -34,8 +34,8 @@ MedzUp é um aplicativo Android desenvolvido em Kotlin para ajudar usuários a g
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/seu-usuario/medzup.git
-   cd medzup
+   git clone https://github.com/BraavoSEP/MedzUp.git
+   cd MedzUp
    ```
 
 2. **Abra no Android Studio**
@@ -71,14 +71,6 @@ app/
 └── build.gradle.kts      # Configuração do módulo
 ```
 
-## 🌍 Suporte a Idiomas
-
-O app suporta os seguintes idiomas:
-- 🇧🇷 **Português Brasileiro** (padrão)
-- 🇺🇸 **Inglês**
-
-Na primeira inicialização, o usuário pode escolher seu idioma preferido.
-
 ## 🔧 Configurações
 
 ### Permissões Necessárias
@@ -92,11 +84,10 @@ Na primeira inicialização, o usuário pode escolher seu idioma preferido.
 
 ## 📱 Telas Principais
 
-1. **Tela de Seleção de Idioma**: Primeira tela para escolher o idioma
-2. **Tela Inicial**: Lista de medicamentos cadastrados
-3. **Adicionar Medicamento**: Formulário para cadastrar novo medicamento
-4. **Detalhes do Medicamento**: Informações e histórico do medicamento
-5. **Câmera**: Escaneamento de medicamentos (em desenvolvimento)
+1. **Tela de Pacientes**: Lista de pacientes cadastrados.
+2. **Tela de Medicamentos do Paciente**: Lista os medicamentos de um paciente específico.
+3. **Adicionar Medicamento**: Formulário para cadastrar novo medicamento para um paciente.
+4. **Detalhes do Medicamento**: Informações e histórico do medicamento (em desenvolvimento).
 
 ## 🤝 Contribuindo
 
@@ -112,8 +103,8 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ## 👨‍💻 Autor
 
-**Seu Nome**
-- GitHub: [@seu-usuario](https://github.com/seu-usuario)
+**BraavoSEP**
+- GitHub: [@BraavoSEP](https://github.com/BraavoSEP)
 
 ## 🙏 Agradecimentos
 
@@ -123,7 +114,7 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ## 📞 Suporte
 
-Se você encontrar algum problema ou tiver sugestões, por favor abra uma [issue](https://github.com/seu-usuario/medzup/issues).
+Se você encontrar algum problema ou tiver sugestões, por favor abra uma [issue](https://github.com/BraavoSEP/MedzUp/issues).
 
 ---
 

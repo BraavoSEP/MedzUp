@@ -32,7 +32,7 @@ class MedicineDetailsViewModel @Inject constructor(
     private val _simplifiedBula = MutableStateFlow<String?>(null)
     val simplifiedBula: StateFlow<String?> = _simplifiedBula
 
-    fun simplifyBulaText(fullText: String) {
+    fun simplifyBulaText() {
         viewModelScope.launch {
             // Simulate a network call to an AI service
             _simplifiedBula.value = "Simplifying..."

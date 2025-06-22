@@ -2,7 +2,10 @@ package com.medzup.app.data.repository
 
 import com.medzup.app.data.database.dao.DoseHistoryDao
 import com.medzup.app.data.database.dao.MedicineDao
+import com.medzup.app.data.database.dao.PatientDao
+import com.medzup.app.data.database.model.DoseHistoryEntity
 import com.medzup.app.data.database.model.MedicineEntity
+import com.medzup.app.data.database.model.PatientEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -10,34 +13,23 @@ import javax.inject.Singleton
 @Singleton
 class MedicineRepository @Inject constructor(
     private val medicineDao: MedicineDao,
-    private val doseHistoryDao: DoseHistoryDao
+    private val doseHistoryDao: DoseHistoryDao,
+    private val patientDao: PatientDao
 ) {
 
-    fun getAllMedicines(): Flow<List<MedicineEntity>> {
-        return medicineDao.getAllMedicines()
-    }
+    // Patient Functions
+    fun getAllPatients(): Flow<List<PatientEntity>> = patientDao.getAllPatients()
+    suspend fun addPatient(patient: PatientEntity) = patientDao.insert(patient)
+    fun getPatientById(patientId: Long): Flow<PatientEntity?> = patientDao.getPatientById(patientId)
 
-    suspend fun addMedicine(medicine: MedicineEntity): Long {
-        return medicineDao.insertMedicine(medicine)
-    }
+    // Medicine Functions
+    fun getMedicinesForPatient(patientId: Long): Flow<List<MedicineEntity>> = medicineDao.getMedicinesForPatient(patientId)
+    fun getMedicineById(medicineId: Long): Flow<MedicineEntity?> = medicineDao.getMedicineById(medicineId)
+    suspend fun addMedicine(medicine: MedicineEntity): Long = medicineDao.insert(medicine)
+    suspend fun updateMedicine(medicine: MedicineEntity) = medicineDao.update(medicine)
+    suspend fun deleteMedicine(medicineId: Long) = medicineDao.deleteById(medicineId)
 
-    suspend fun updateMedicine(medicine: MedicineEntity) {
-        medicineDao.updateMedicine(medicine)
-    }
-
-    suspend fun deleteMedicine(medicineId: Long) {
-        medicineDao.deleteMedicine(medicineId)
-    }
-
-    fun getMedicineById(medicineId: Long): Flow<MedicineEntity?> {
-        return medicineDao.getMedicineById(medicineId)
-    }
-
-    fun getDoseHistoryForMedicine(medicineId: Long): Flow<List<com.medzup.app.data.database.model.DoseHistoryEntity>> {
-        return doseHistoryDao.getDoseHistoryForMedicine(medicineId)
-    }
-
-    suspend fun addDoseHistory(doseHistory: com.medzup.app.data.database.model.DoseHistoryEntity) {
-        doseHistoryDao.insertDoseHistory(doseHistory)
-    }
+    // Dose History Functions
+    fun getDoseHistoryForMedicine(medicineId: Long): Flow<List<DoseHistoryEntity>> = doseHistoryDao.getDoseHistoryForMedicine(medicineId)
+    suspend fun addDoseHistory(doseHistory: DoseHistoryEntity) = doseHistoryDao.insertDoseHistory(doseHistory)
 } 

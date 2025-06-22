@@ -5,9 +5,12 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.medzup.app.R
+import java.util.concurrent.TimeUnit
 
 class ReminderWorker(
     private val context: Context,
@@ -19,6 +22,9 @@ class ReminderWorker(
         val dosage = inputData.getString(KEY_DOSAGE) ?: return Result.failure()
 
         showNotification(medicineName, dosage)
+        // O reagendamento agora é feito inteiramente pelo ReminderManager
+        // ao salvar o medicamento, para toda a duração do tratamento.
+        // rescheduleNextWork() // REMOVED
 
         return Result.success()
     }

@@ -1,19 +1,22 @@
 package com.medzup.app.ui.screens.add_medicine
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.medzup.app.ui.navigation.Screen
+import com.medzup.app.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,31 +24,26 @@ fun AddMedicineScreen(
     navController: NavController,
     viewModel: AddMedicineViewModel = hiltViewModel()
 ) {
-    var name by remember { mutableStateOf("") }
+    var medicineName by remember { mutableStateOf("") }
     var dosage by remember { mutableStateOf("") }
     var stock by remember { mutableStateOf("") }
-    var reminderTimes by remember { mutableStateOf("") }
-
-    val ocrText = navController.currentBackStackEntry
-        ?.savedStateHandle
-        ?.getLiveData<String>("ocr_text")?.observeAsState()
-
-    LaunchedEffect(ocrText) {
-        ocrText?.value?.let {
-            name = it
-            // Clear the value from savedStateHandle so it's not reused
-            navController.currentBackStackEntry?.savedStateHandle?.set("ocr_text", null)
-        }
-    }
+    var startTime by remember { mutableStateOf("") }
+    var intervalHours by remember { mutableStateOf("") }
+    var durationDays by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add New Medicine") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                title = { Text(text = stringResource(id = R.string.add_medicine_title)) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.action_back)
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->
@@ -53,56 +51,69 @@ fun AddMedicineScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(16.dp)
-                .fillMaxSize(),
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Medicine Name") },
-                    modifier = Modifier.weight(1f)
-                )
-                IconButton(onClick = { navController.navigate(Screen.CameraScan.createRoute("box_name")) }) {
-                    Icon(Icons.Default.CameraAlt, contentDescription = "Scan medicine box")
-                }
-            }
+            OutlinedTextField(
+                value = medicineName,
+                onValueChange = { medicineName = it },
+                label = { Text(stringResource(id = R.string.medicine_name_label)) },
+                modifier = Modifier.fillMaxWidth()
+            )
             OutlinedTextField(
                 value = dosage,
                 onValueChange = { dosage = it },
-                label = { Text("Dosage (e.g., 1 pill)") },
+                label = { Text(stringResource(id = R.string.dosage_label_input)) },
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = stock,
                 onValueChange = { stock = it },
-                label = { Text("Stock Quantity") },
+                label = { Text(stringResource(id = R.string.stock_label_input)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
-                value = reminderTimes,
-                onValueChange = { reminderTimes = it },
-                label = { Text("Reminder Times (e.g., 08:00,20:00)") },
+                value = startTime,
+                onValueChange = { startTime = it },
+                label = { Text(stringResource(id = R.string.start_time_label)) },
+                placeholder = { Text("HH:mm") },
                 modifier = Modifier.fillMaxWidth()
             )
-
+            OutlinedTextField(
+                value = intervalHours,
+                onValueChange = { intervalHours = it },
+                label = { Text(stringResource(id = R.string.interval_hours_label)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = durationDays,
+                onValueChange = { durationDays = it },
+                label = { Text(stringResource(id = R.string.treatment_duration_label)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth()
+            )
             Spacer(modifier = Modifier.weight(1f))
-
             Button(
                 onClick = {
-                    viewModel.addMedicine(
-                        name = name,
+                    viewModel.saveMedicine(
+                        name = medicineName,
                         dosage = dosage,
-                        stock = stock.toIntOrNull() ?: 0,
-                        reminderTimes = reminderTimes
+                        stock = stock,
+                        startTime = startTime,
+                        intervalHours = intervalHours,
+                        durationDays = durationDays,
+                        onSuccess = {
+                            Toast.makeText(context, R.string.medicine_saved_toast, Toast.LENGTH_SHORT).show()
+                            navController.popBackStack()
+                        }
                     )
-                    navController.popBackStack()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Save Medicine")
+                Text(text = stringResource(id = R.string.save_medicine_button))
             }
         }
     }
-} 
+}
