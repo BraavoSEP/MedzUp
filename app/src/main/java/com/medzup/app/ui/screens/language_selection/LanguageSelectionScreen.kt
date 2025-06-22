@@ -1,5 +1,6 @@
 package com.medzup.app.ui.screens.language_selection
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -115,9 +116,9 @@ private fun LanguageOption(
             }
         ),
         border = if (isSelected) {
-            CardDefaults.cardBorder
+            BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
         } else {
-            CardDefaults.cardBorder
+            BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
         }
     ) {
         Row(
@@ -138,23 +139,14 @@ private fun LanguageOption(
                 }
             )
             
-            if (isSelected) {
-                RadioButton(
-                    selected = true,
-                    onClick = onClick,
-                    colors = RadioButtonDefaults.colors(
-                        selectedColor = MaterialTheme.colorScheme.primary
-                    )
+            RadioButton(
+                selected = isSelected,
+                onClick = onClick,
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = MaterialTheme.colorScheme.primary,
+                    unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-            } else {
-                RadioButton(
-                    selected = false,
-                    onClick = onClick,
-                    colors = RadioButtonDefaults.colors(
-                        unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                )
-            }
+            )
         }
     }
 } 
