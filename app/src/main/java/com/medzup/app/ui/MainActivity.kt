@@ -55,5 +55,4 @@ fun MainContent(languageManager: LanguageManager) {
     } else {
         MainNavGraph()
     }
-} 
-} 
+}

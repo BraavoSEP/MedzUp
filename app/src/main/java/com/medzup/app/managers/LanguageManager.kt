@@ -57,12 +57,12 @@ class LanguageManager @Inject constructor(
         return context.createConfigurationContext(config)
     }
     
-    fun updateResources(resources: Resources): Resources {
+    fun updateResources(baseContext: Context): Resources {
         val language = getCurrentLanguage()
         val locale = Locale(language)
         Locale.setDefault(locale)
         
-        val config = Configuration(resources.configuration)
+        val config = Configuration(baseContext.resources.configuration)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             config.setLocale(locale)
         } else {
@@ -70,6 +70,6 @@ class LanguageManager @Inject constructor(
             config.locale = locale
         }
         
-        return resources.createConfigurationContext(config).resources
+        return baseContext.createConfigurationContext(config).resources
     }
 } 
