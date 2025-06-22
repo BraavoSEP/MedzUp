@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.MedzUp" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.MedzUp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/vintage_green</item>
     </style>
 </resources> 
