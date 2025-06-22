@@ -13,18 +13,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.medzup.app.R
+import com.medzup.app.managers.LanguageManager
 
 @Composable
 fun LanguageSelectionScreen(
     onLanguageSelected: () -> Unit,
     viewModel: LanguageSelectionViewModel = hiltViewModel()
 ) {
-    var selectedLanguage by remember { mutableStateOf("pt") }
-    
-    LaunchedEffect(selectedLanguage) {
+    var selectedLanguage by remember { mutableStateOf(LanguageManager.LANGUAGE_PORTUGUESE) }
+
+    // Aplica o idioma inicial
+    LaunchedEffect(Unit) {
         viewModel.setLanguage(selectedLanguage)
     }
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -67,15 +69,21 @@ fun LanguageSelectionScreen(
             // Portuguese Option
             LanguageOption(
                 title = stringResource(R.string.language_portuguese),
-                isSelected = selectedLanguage == "pt",
-                onClick = { selectedLanguage = "pt" }
+                isSelected = selectedLanguage == LanguageManager.LANGUAGE_PORTUGUESE,
+                onClick = {
+                    selectedLanguage = LanguageManager.LANGUAGE_PORTUGUESE
+                    viewModel.setLanguage(selectedLanguage)
+                }
             )
             
             // English Option
             LanguageOption(
                 title = stringResource(R.string.language_english),
-                isSelected = selectedLanguage == "en",
-                onClick = { selectedLanguage = "en" }
+                isSelected = selectedLanguage == LanguageManager.LANGUAGE_ENGLISH,
+                onClick = {
+                    selectedLanguage = LanguageManager.LANGUAGE_ENGLISH
+                    viewModel.setLanguage(selectedLanguage)
+                }
             )
         }
         
@@ -107,6 +115,7 @@ private fun LanguageOption(
     onClick: () -> Unit
 ) {
     Card(
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) {

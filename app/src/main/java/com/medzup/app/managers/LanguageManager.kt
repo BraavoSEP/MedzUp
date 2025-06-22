@@ -2,9 +2,9 @@ package com.medzup.app.managers
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.os.Build
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Locale
 import javax.inject.Inject
@@ -39,37 +39,16 @@ class LanguageManager @Inject constructor(
     
     fun setLanguage(languageCode: String) {
         prefs.edit().putString(KEY_LANGUAGE, languageCode).apply()
+        applyLanguage(languageCode)
     }
     
-    fun updateLocale(context: Context): Context {
-        val language = getCurrentLanguage()
-        val locale = Locale(language)
-        Locale.setDefault(locale)
-        
-        val config = Configuration(context.resources.configuration)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            config.setLocale(locale)
-        } else {
-            @Suppress("DEPRECATION")
-            config.locale = locale
-        }
-        
-        return context.createConfigurationContext(config)
+    fun applyLanguage(languageCode: String) {
+        val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(languageCode)
+        AppCompatDelegate.setApplicationLocales(appLocale)
     }
     
-    fun updateResources(baseContext: Context): Resources {
-        val language = getCurrentLanguage()
-        val locale = Locale(language)
-        Locale.setDefault(locale)
-        
-        val config = Configuration(baseContext.resources.configuration)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            config.setLocale(locale)
-        } else {
-            @Suppress("DEPRECATION")
-            config.locale = locale
-        }
-        
-        return baseContext.createConfigurationContext(config).resources
+    fun initialize() {
+        val currentLanguage = getCurrentLanguage()
+        applyLanguage(currentLanguage)
     }
 } 

@@ -3,17 +3,23 @@ package com.medzup.app
 import android.app.Application
 import android.content.res.Configuration
 import android.os.Build
+import com.medzup.app.managers.LanguageManager
 import dagger.hilt.android.HiltAndroidApp
 import java.util.Locale
+import javax.inject.Inject
 
 @HiltAndroidApp
 class MedzUpApplication : Application() {
     
+    @Inject
+    lateinit var languageManager: LanguageManager
+
     override fun onCreate() {
         super.onCreate()
         
         // Configurar idioma padrão como português
         setDefaultLocale()
+        languageManager.initialize()
     }
     
     private fun setDefaultLocale() {
