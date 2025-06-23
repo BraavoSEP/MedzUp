@@ -3,6 +3,8 @@ package com.medzup.app.ui.screens.details
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -106,28 +108,36 @@ fun MedicineDetailsScreen(
         }
     ) { paddingValues ->
         medicine?.let { med ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .padding(paddingValues)
-                    .padding(16.dp)
-                    .fillMaxSize()
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(16.dp)
             ) {
-                MedicineInfoSection(
-                    medicine = med,
-                    navController = navController,
-                    onDoseRecorded = { status ->
-                        viewModel.recordDose(status)
-                    }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                DoseHistorySection(doseHistory)
-                bulaText?.let {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    BulaSection(
-                        text = it,
-                        simplifiedText = simplifiedBula,
-                        onSimplifyClick = { viewModel.simplifyBulaText() }
+                item {
+                    MedicineInfoSection(
+                        medicine = med,
+                        navController = navController,
+                        onDoseRecorded = { status ->
+                            viewModel.recordDose(status)
+                        }
                     )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    FutureAlarmsSection(med)
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                item {
+                    DoseHistorySection(doseHistory)
+                }
+                item {
+                    bulaText?.let {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        BulaSection(
+                            text = it,
+                            simplifiedText = simplifiedBula,
+                            onSimplifyClick = { viewModel.simplifyBulaText() }
+                        )
+                    }
                 }
             }
         }
@@ -168,11 +178,11 @@ fun MedicineInfoSection(
 fun DoseHistorySection(history: List<DoseHistoryEntity>) {
     Text(stringResource(id = R.string.history), style = MaterialTheme.typography.titleLarge)
     Spacer(modifier = Modifier.height(8.dp))
-    LazyColumn {
-        items(history) { record ->
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        history.forEach { record ->
             val date = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
                 .format(Date(record.timestamp))
-            Text("• ${record.status} at $date")
+            Text("\u2022 ${record.status} at $date")
         }
     }
 }
@@ -196,6 +206,44 @@ fun BulaSection(text: String, simplifiedText: String?, onSimplifyClick: () -> Un
         Card(modifier = Modifier.fillMaxWidth()) {
             Box(modifier = Modifier.padding(16.dp)) {
                 Text(it)
+            }
+        }
+    }
+}
+
+@Composable
+fun FutureAlarmsSection(medicine: MedicineEntity) {
+    val formatter = remember { SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()) }
+    val timeParts = medicine.startTime.split(":").map { it.trim().toInt() }
+    if (timeParts.size == 2) {
+        val startHour = timeParts[0]
+        val startMinute = timeParts[1]
+        val interval = medicine.intervalHours
+        val duration = medicine.durationDays
+
+        val now = Calendar.getInstance()
+        val treatmentEnd = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, duration) }
+        val currentReminderTime = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, startHour)
+            set(Calendar.MINUTE, startMinute)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        if (currentReminderTime.before(now)) {
+            while (currentReminderTime.before(now)) {
+                currentReminderTime.add(Calendar.HOUR_OF_DAY, interval)
+            }
+        }
+        val futureTimes = mutableListOf<String>()
+        while (currentReminderTime.before(treatmentEnd)) {
+            futureTimes.add(formatter.format(currentReminderTime.time))
+            currentReminderTime.add(Calendar.HOUR_OF_DAY, interval)
+        }
+        if (futureTimes.isNotEmpty()) {
+            Text("Próximos horários agendados:", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(4.dp))
+            futureTimes.forEach { time ->
+                Text("• $time", style = MaterialTheme.typography.bodyMedium)
             }
         }
     }

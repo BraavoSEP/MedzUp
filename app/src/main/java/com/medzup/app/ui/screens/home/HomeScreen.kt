@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +31,11 @@ import com.medzup.app.R
 import com.medzup.app.data.database.model.MedicineEntity
 import com.medzup.app.data.database.model.PatientEntity
 import com.medzup.app.ui.navigation.Screen
+import android.os.Build
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.widget.Toast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +45,22 @@ fun HomeScreen(
 ) {
     val patients by viewModel.patients.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
+
+    // Solicitar permissão de notificação para Android 13+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val context = LocalContext.current
+        val notificationPermissionLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+            onResult = { granted ->
+                if (!granted) {
+                    Toast.makeText(context, "Permissão de notificação negada. Os lembretes podem não funcionar.", Toast.LENGTH_LONG).show()
+                }
+            }
+        )
+        LaunchedEffect(Unit) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     Scaffold(
         topBar = {

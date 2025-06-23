@@ -35,18 +35,18 @@ class ReminderWorker(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Medicine Reminders",
+                "Lembretes de Medicamentos",
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Channel for medicine reminder notifications"
+                description = "Canal para notificações de lembrete de medicamentos"
             }
             notificationManager.createNotificationChannel(channel)
         }
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Using our placeholder icon
-            .setContentTitle("Time for your medicine!")
-            .setContentText("It's time to take your $medicineName ($dosage).")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Hora do seu medicamento!")
+            .setContentText("Está na hora de tomar $medicineName ($dosage).")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()
