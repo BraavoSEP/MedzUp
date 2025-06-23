@@ -1,0 +1,33 @@
+Wireframe das Telas – MedzUp (Revisado)
+
+1. Tela Inicial (Lista de Pacientes)
+- Título no topo: "Pacientes"
+- Lista de pacientes cadastrados (nome)
+- Botão flutuante "+" para adicionar novo paciente
+- Ao clicar em um paciente, navega para a lista de medicamentos desse paciente
+- Se não houver pacientes, exibe mensagem "Nenhum paciente cadastrado"
+
+2. Tela de Lista de Medicamentos do Paciente
+- Título no topo: Nome do paciente
+- Lista de medicamentos cadastrados (nome, dosagem, estoque, horários)
+- Botão flutuante "+" para adicionar novo medicamento
+- Opção de excluir paciente
+- Ao clicar em um medicamento, navega para a tela de detalhes do medicamento
+- Se não houver medicamentos, exibe mensagem "Nenhum medicamento cadastrado"
+
+3. Tela de Cadastro/Edição de Medicamento
+- Título: "Adicionar Medicamento" ou "Editar Medicamento"
+- Campo para nome do medicamento
+- Campo para dosagem
+- Campo para quantidade em estoque
+- Campo para horário inicial (ex: 08:00)
+- Campo para intervalo em horas (ex: a cada 8 horas)
+- Campo para duração do tratamento em dias
+- Botão "Salvar" (ou "Atualizar" se for edição)
+- Ao salvar, retorna para a lista de medicamentos do paciente
+
+4. Tela de Detalhes do Medicamento
+- Título: Nome do medicamento
+- Exibe: dosagem, estoque, horários, duração, histórico de doses
+- Botão para editar medicamento
+- Botão para excluir medicamento 
