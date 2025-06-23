@@ -6,10 +6,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,6 +32,69 @@ fun PatientMedicineListScreen(
 ) {
     val patient by viewModel.patient.collectAsState()
     val medicines by viewModel.medicines.collectAsState()
+    val showDeletePatientDialog = remember { mutableStateOf(false) }
+    val medicineToDelete = remember { mutableStateOf<MedicineEntity?>(null) }
+
+    if (patient == null) {
+        // Exibe mensagem de erro amigável se o paciente não for encontrado
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = stringResource(id = R.string.error_patient_not_found)) },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(id = R.string.action_back)
+                            )
+                        }
+                    }
+                )
+            }
+        ) { paddingValues ->
+            Box(modifier = Modifier.padding(paddingValues).fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = stringResource(id = R.string.error_patient_not_found), color = MaterialTheme.colorScheme.error)
+            }
+        }
+        return
+    }
+
+    if (showDeletePatientDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showDeletePatientDialog.value = false },
+            title = { Text("Excluir paciente") },
+            text = { Text("Tem certeza que deseja excluir este paciente? Todos os medicamentos associados também serão removidos.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deletePatient {
+                        showDeletePatientDialog.value = false
+                        navController.popBackStack()
+                    }
+                }) { Text("Excluir") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeletePatientDialog.value = false }) { Text("Cancelar") }
+            }
+        )
+    }
+
+    if (medicineToDelete.value != null) {
+        AlertDialog(
+            onDismissRequest = { medicineToDelete.value = null },
+            title = { Text("Excluir medicamento") },
+            text = { Text("Tem certeza que deseja excluir o medicamento '${medicineToDelete.value?.name}'?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deleteMedicine(medicineToDelete.value!!.id) {
+                        medicineToDelete.value = null
+                    }
+                }) { Text("Excluir") }
+            },
+            dismissButton = {
+                TextButton(onClick = { medicineToDelete.value = null }) { Text("Cancelar") }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -39,6 +106,11 @@ fun PatientMedicineListScreen(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(id = R.string.action_back)
                         )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { showDeletePatientDialog.value = true }) {
+                        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Excluir paciente")
                     }
                 }
             )
@@ -71,7 +143,8 @@ fun PatientMedicineListScreen(
                             medicine = medicine,
                             onClick = {
                                 navController.navigate(Screen.MedicineDetails.createRoute(medicine.id))
-                            }
+                            },
+                            onDelete = { medicineToDelete.value = it }
                         )
                     }
                 }
@@ -81,25 +154,33 @@ fun PatientMedicineListScreen(
 }
 
 @Composable
-fun MedicineCard(medicine: MedicineEntity, onClick: () -> Unit) {
+fun MedicineCard(medicine: MedicineEntity, onClick: () -> Unit, onDelete: (MedicineEntity) -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = medicine.name, style = MaterialTheme.typography.titleLarge)
-            Text(
-                text = stringResource(R.string.dosage_label, medicine.dosage),
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = stringResource(R.string.stock_label, medicine.stock),
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Text(
-                text = stringResource(R.string.schedule_label, medicine.startTime, medicine.intervalHours),
-                style = MaterialTheme.typography.bodyMedium
-            )
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = medicine.name, style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = stringResource(R.string.dosage_label, medicine.dosage),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = stringResource(R.string.stock_label, medicine.stock),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = stringResource(R.string.schedule_label, medicine.startTime, medicine.intervalHours),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            IconButton(onClick = { onDelete(medicine) }) {
+                Icon(imageVector = Icons.Filled.Delete, contentDescription = "Excluir medicamento")
+            }
         }
     }
 } 

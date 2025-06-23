@@ -17,4 +17,7 @@ interface PatientDao {
 
     @Query("SELECT * FROM patients WHERE id = :patientId")
     fun getPatientById(patientId: Long): Flow<PatientEntity?>
+
+    @Query("DELETE FROM patients WHERE id = :patientId")
+    suspend fun deleteById(patientId: Long)
 } 

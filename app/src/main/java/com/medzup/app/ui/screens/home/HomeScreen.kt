@@ -123,6 +123,7 @@ fun PatientCard(patient: PatientEntity, onClick: () -> Unit) {
 @Composable
 fun AddPatientDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
     var name by remember { mutableStateOf("") }
+    var showError by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismiss) {
         Card {
@@ -131,9 +132,20 @@ fun AddPatientDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
                     value = name,
-                    onValueChange = { name = it },
-                    label = { Text(stringResource(id = R.string.patient_name_label)) }
+                    onValueChange = {
+                        name = it
+                        if (showError && it.isNotBlank()) showError = false
+                    },
+                    label = { Text(stringResource(id = R.string.patient_name_label)) },
+                    isError = showError
                 )
+                if (showError) {
+                    Text(
+                        text = stringResource(id = R.string.error_patient_name_required),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -143,7 +155,13 @@ fun AddPatientDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
                         Text(stringResource(id = R.string.cancel_button))
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = { onConfirm(name) }) {
+                    Button(onClick = {
+                        if (name.isBlank()) {
+                            showError = true
+                        } else {
+                            onConfirm(name)
+                        }
+                    }) {
                         Text(stringResource(id = R.string.add_button))
                     }
                 }

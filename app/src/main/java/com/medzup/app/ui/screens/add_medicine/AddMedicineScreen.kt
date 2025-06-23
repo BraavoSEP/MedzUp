@@ -24,6 +24,7 @@ fun AddMedicineScreen(
     navController: NavController,
     viewModel: AddMedicineViewModel = hiltViewModel()
 ) {
+    val medicine by viewModel.medicine.collectAsState()
     var medicineName by remember { mutableStateOf("") }
     var dosage by remember { mutableStateOf("") }
     var stock by remember { mutableStateOf("") }
@@ -32,10 +33,24 @@ fun AddMedicineScreen(
     var durationDays by remember { mutableStateOf("") }
     val context = LocalContext.current
 
+    // Preencher campos se for edição
+    LaunchedEffect(medicine) {
+        medicine?.let {
+            medicineName = it.name
+            dosage = it.dosage
+            stock = it.stock.toString()
+            startTime = it.startTime
+            intervalHours = it.intervalHours.toString()
+            durationDays = it.durationDays.toString()
+        }
+    }
+
+    val isEditing = medicine != null
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.add_medicine_title)) },
+                title = { Text(text = if (isEditing) stringResource(id = R.string.edit_medicine_title) else stringResource(id = R.string.add_medicine_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
@@ -105,14 +120,14 @@ fun AddMedicineScreen(
                         intervalHours = intervalHours,
                         durationDays = durationDays,
                         onSuccess = {
-                            Toast.makeText(context, R.string.medicine_saved_toast, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, if (isEditing) R.string.medicine_updated_toast else R.string.medicine_saved_toast, Toast.LENGTH_SHORT).show()
                             navController.popBackStack()
                         }
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = stringResource(id = R.string.save_medicine_button))
+                Text(text = if (isEditing) stringResource(id = R.string.update_medicine_button) else stringResource(id = R.string.save_medicine_button))
             }
         }
     }

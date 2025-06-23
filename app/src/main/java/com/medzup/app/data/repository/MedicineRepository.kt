@@ -21,6 +21,7 @@ class MedicineRepository @Inject constructor(
     fun getAllPatients(): Flow<List<PatientEntity>> = patientDao.getAllPatients()
     suspend fun addPatient(patient: PatientEntity) = patientDao.insert(patient)
     fun getPatientById(patientId: Long): Flow<PatientEntity?> = patientDao.getPatientById(patientId)
+    suspend fun deletePatient(patientId: Long) = patientDao.deleteById(patientId)
 
     // Medicine Functions
     fun getMedicinesForPatient(patientId: Long): Flow<List<MedicineEntity>> = medicineDao.getMedicinesForPatient(patientId)

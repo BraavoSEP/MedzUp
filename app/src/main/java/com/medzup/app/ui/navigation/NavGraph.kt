@@ -26,6 +26,9 @@ sealed class Screen(val route: String) {
     object CameraScan : Screen("camera_scan_screen/{scanMode}") {
         fun createRoute(scanMode: String) = "camera_scan_screen/$scanMode"
     }
+    object EditMedicine : Screen("edit_medicine_screen/{patientId}/{medicineId}") {
+        fun createRoute(patientId: Long, medicineId: Long) = "edit_medicine_screen/$patientId/$medicineId"
+    }
 }
 
 @Composable
@@ -62,6 +65,15 @@ fun MainNavGraph() {
             arguments = listOf(navArgument("scanMode") { type = NavType.StringType })
         ) {
             CameraScreen(navController = navController)
+        }
+        composable(
+            route = Screen.EditMedicine.route,
+            arguments = listOf(
+                navArgument("patientId") { type = NavType.LongType },
+                navArgument("medicineId") { type = NavType.LongType }
+            )
+        ) {
+            AddMedicineScreen(navController = navController)
         }
     }
 } 

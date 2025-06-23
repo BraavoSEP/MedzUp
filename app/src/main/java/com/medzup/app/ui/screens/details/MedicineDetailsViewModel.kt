@@ -21,7 +21,7 @@ class MedicineDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val medicineId: Long = savedStateHandle.get<String>("medicineId")?.toLongOrNull() ?: 0
+    private val medicineId: Long = savedStateHandle.get<Long>("medicineId") ?: 0L
 
     val medicine: StateFlow<MedicineEntity?> = repository.getMedicineById(medicineId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
@@ -68,6 +68,13 @@ class MedicineDetailsViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun deleteMedicine(onDeleted: () -> Unit) {
+        viewModelScope.launch {
+            repository.deleteMedicine(medicineId)
+            onDeleted()
         }
     }
 } 

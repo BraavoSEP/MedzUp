@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class PatientMedicineListViewModel @Inject constructor(
@@ -24,4 +25,18 @@ class PatientMedicineListViewModel @Inject constructor(
 
     val medicines: StateFlow<List<MedicineEntity>> = repository.getMedicinesForPatient(patientId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun deletePatient(onDeleted: () -> Unit) {
+        viewModelScope.launch {
+            repository.deletePatient(patientId)
+            onDeleted()
+        }
+    }
+
+    fun deleteMedicine(medicineId: Long, onDeleted: () -> Unit) {
+        viewModelScope.launch {
+            repository.deleteMedicine(medicineId)
+            onDeleted()
+        }
+    }
 } 

@@ -127,4 +127,20 @@
     <string name="add_button">Adicionar</string>
     <string name="empty_medicines_message">Nenhum medicamento cadastrado para este paciente.\nToque no botão \'+\' para adicionar o primeiro.</string>
     <string name="save_medicine_button">Salvar Medicamento</string>
+    <string name="error_patient_not_found">Paciente não encontrado.</string>
+    <string name="error_patient_name_required">O nome do paciente é obrigatório.</string>
+
+    <!-- New strings added -->
+    <string name="edit_medicine_title">Editar Medicamento</string>
+    <string name="medicine_updated_toast">Medicamento atualizado!</string>
+    <string name="update_medicine_button">Atualizar Medicamento</string>
+    <string name="dosage_label_details">Dosagem: %s</string>
+    <string name="stock_label_details">Estoque: %d</string>
+    <string name="mark_as_taken">Marcar como Tomado</string>
+    <string name="mark_as_skipped">Marcar como Pulado</string>
+    <string name="scan_bula">Escanear Bula</string>
+    <string name="history">Histórico</string>
+    <string name="scanned_bula_text">Texto da Bula Escaneada</string>
+    <string name="simplify_text">Simplificar Texto</string>
+    <string name="simplified_version">Versão Simplificada</string>
 </resources> 

@@ -38,6 +38,7 @@ fun MedicineDetailsScreen(
     val doseHistory by viewModel.doseHistory.collectAsState()
     val simplifiedBula by viewModel.simplifiedBula.collectAsState()
     var bulaText by remember { mutableStateOf<String?>(null) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     val scannedBulaText = navController.currentBackStackEntry
         ?.savedStateHandle
@@ -48,6 +49,25 @@ fun MedicineDetailsScreen(
             bulaText = it
             navController.currentBackStackEntry?.savedStateHandle?.set("bula_text", null)
         }
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Excluir medicamento") },
+            text = { Text("Tem certeza que deseja excluir este medicamento?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deleteMedicine {
+                        showDeleteDialog = false
+                        navController.popBackStack()
+                    }
+                }) { Text("Excluir") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancelar") }
+            }
+        )
     }
 
     Scaffold(
@@ -63,8 +83,18 @@ fun MedicineDetailsScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* TODO: Handle edit */ }) {
-                        // Placeholder for edit action
+                    IconButton(onClick = {
+                        // Navegar para tela de edição
+                        medicine?.let {
+                            navController.navigate(
+                                com.medzup.app.ui.navigation.Screen.EditMedicine.createRoute(it.patientId, it.id)
+                            )
+                        }
+                    }) {
+                        Icon(imageVector = Icons.Filled.Edit, contentDescription = "Editar")
+                    }
+                    IconButton(onClick = { showDeleteDialog = true }) {
+                        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Excluir")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -115,20 +145,20 @@ fun MedicineInfoSection(
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(Modifier.padding(16.dp)) {
-            Text("Dosage: ${medicine.dosage}", style = MaterialTheme.typography.bodyLarge)
-            Text("Stock: ${medicine.stock}", style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(id = R.string.dosage_label_details, medicine.dosage), style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(id = R.string.stock_label_details, medicine.stock), style = MaterialTheme.typography.bodyLarge)
             Spacer(modifier = Modifier.height(16.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = { onDoseRecorded("TAKEN") }) {
-                    Text("Mark as Taken")
+                    Text(stringResource(id = R.string.mark_as_taken))
                 }
                 OutlinedButton(onClick = { onDoseRecorded("SKIPPED") }) {
-                    Text("Mark as Skipped")
+                    Text(stringResource(id = R.string.mark_as_skipped))
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { navController.navigate(Screen.CameraScan.createRoute("bula")) }) {
-                Text("Scan Bula")
+                Text(stringResource(id = R.string.scan_bula))
             }
         }
     }
@@ -136,7 +166,7 @@ fun MedicineInfoSection(
 
 @Composable
 fun DoseHistorySection(history: List<DoseHistoryEntity>) {
-    Text("History", style = MaterialTheme.typography.titleLarge)
+    Text(stringResource(id = R.string.history), style = MaterialTheme.typography.titleLarge)
     Spacer(modifier = Modifier.height(8.dp))
     LazyColumn {
         items(history) { record ->
@@ -149,7 +179,7 @@ fun DoseHistorySection(history: List<DoseHistoryEntity>) {
 
 @Composable
 fun BulaSection(text: String, simplifiedText: String?, onSimplifyClick: () -> Unit) {
-    Text("Scanned Bula Text", style = MaterialTheme.typography.titleLarge)
+    Text(stringResource(id = R.string.scanned_bula_text), style = MaterialTheme.typography.titleLarge)
     Spacer(modifier = Modifier.height(8.dp))
     Card(modifier = Modifier.fillMaxWidth()) {
         Box(modifier = Modifier.padding(16.dp)) {
@@ -158,11 +188,11 @@ fun BulaSection(text: String, simplifiedText: String?, onSimplifyClick: () -> Un
     }
     Spacer(modifier = Modifier.height(8.dp))
     Button(onClick = onSimplifyClick) {
-        Text("Simplify Text")
+        Text(stringResource(id = R.string.simplify_text))
     }
     simplifiedText?.let {
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Simplified Version", style = MaterialTheme.typography.titleLarge)
+        Text(stringResource(id = R.string.simplified_version), style = MaterialTheme.typography.titleLarge)
         Card(modifier = Modifier.fillMaxWidth()) {
             Box(modifier = Modifier.padding(16.dp)) {
                 Text(it)
